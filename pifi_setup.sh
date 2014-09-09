@@ -21,6 +21,7 @@ read -p 'Enter notification receiver email: ' notification_receiver
 
 #### Housekeeping
 # Vim is the bomb
+apt-get -y update
 update-alternatives --set editor /usr/bin/vim.tiny
 
 
@@ -31,21 +32,23 @@ sed -i "s/raspberrypi/${pifi_server_name}/" /etc/hostname
 
 
 ##### NTFS drive mounting
-apt-get install ntfs-3g
-mkdir /media/pri /media/aux
+apt-get -y install ntfs-3g
+mkdir /media/pri /media/aux 
 
 # add entries to fstab so that we mount drives on every bootup
 echo '/dev/sda1  /media/pri  ntfs-3g  uid=root,gid=root,umask=007 0  0' >> /etc/fstab
 echo '/dev/sdb1  /media/aux  ntfs-3g  uid=root,gid=root,umask=007 0  0' >> /etc/fstab
 
-# read fstab and mount now
+# read fstab and mount now so that we can create a public folder
 mount -a
 
 # ensure that public share exists on both drives
 mkdir -p /media/pri/shares/public /media/aux/shares/public
 
-# mount public folder
-echo '/dev/sda1/shares/public  /media/public  ntfs-3g  uid=pi,gid=pi,umask=000  0  0' >> /etc/fstab
+# now that we've a public folder, let's mount again
+mkdir -m a=rwx /media/public
+echo '/media/pri/shares/public  /media/public  bind  uid=pi,gid=pi,umask=000,bind  0  0' >> /etc/fstab
+mount -a
 
 
 ##### Samba Setup
