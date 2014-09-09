@@ -19,6 +19,11 @@ read -s -p 'Enter notification sender gmail password: ' notification_password
 read -p 'Enter notification receiver email: ' notification_receiver
 
 
+#### Housekeeping
+# Vim is the bomb
+update-alternatives --set editor /usr/bin/vim.tiny
+
+
 ##### Hostname Setup
 hostname $pifi_server_name
 sed -i "s/raspberrypi/${pifi_server_name}/" /etc/hosts
