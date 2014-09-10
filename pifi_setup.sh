@@ -3,25 +3,25 @@
 
 
 ##### Sane Defaults #####
-# read -p 'Enter desired server name: ' server_name
+# read -p 'Enter desired server name: ' pifi_server_name
 pifi_server_name='pifi'
 # read -p 'Enter notification email server: ' notification_server
 notification_server='smtp.gmail.com:587'
 # read -p 'Enter backup job start hour (0 is midnight, 23 is 11pm): ' backup_start_hour
 backup_start_hour=2
-# read -p 'Enter Workgroup name: ' workgroup
-workgroup='WORKGROUP'
 
 
 ##### Inputs we require #####
+read -p 'Enter Workgroup name: ' workgroup
 read -p 'Enter notification sender gmail: ' notification_sender
 read -s -p 'Enter notification sender gmail password: ' notification_password
+echo
 read -p 'Enter notification receiver email: ' notification_receiver
 
 
 #### Housekeeping
-# Vim is the bomb
 apt-get -y update
+# Vim is the bomb
 update-alternatives --set editor /usr/bin/vim.tiny
 
 
@@ -36,20 +36,9 @@ apt-get -y install ntfs-3g
 mkdir /media/pri /media/aux 
 
 # add entries to fstab so that we mount drives on every bootup
-echo '/dev/sda1  /media/pri  ntfs-3g  uid=root,gid=root,umask=007 0  0' >> /etc/fstab
-echo '/dev/sdb1  /media/aux  ntfs-3g  uid=root,gid=root,umask=007 0  0' >> /etc/fstab
-
-# read fstab and mount now so that we can create a public folder
+echo '/dev/sda1  /media/pri  ntfs-3g  default  0  0' >> /etc/fstab
+echo '/dev/sdb1  /media/aux  ntfs-3g  default  0  0' >> /etc/fstab
 mount -a
-
-# ensure that public share exists on both drives
-mkdir -p /media/pri/shares/public /media/aux/shares/public
-
-# now that we've a public folder, let's mount again
-mkdir -m a=rwx /media/public
-echo '/media/pri/shares/public  /media/public  bind  uid=pi,gid=pi,umask=000,bind  0  0' >> /etc/fstab
-mount -a
-
 
 ##### Samba Setup
 apt-get -y install samba samba-common-bin libpam-smbpass winbind
@@ -64,12 +53,15 @@ sed -i 's/files dns/files wins dns/' /etc/nsswitch.conf
 # set workgroup name
 sed -i "s/WORKGROUP/${workgroup}/" /etc/samba/smb.conf
 
+# make home directories writeable (first instance of read only is in homes section)
+sed -i "s/read only = yes/read only = no/" /etc/samba/smb.conf
+
 # add public share
 cat <<EOF >> /etc/samba/smb.conf
 
 [public]
    comment = Public Files
-   path = /media/public
+   path = /media/pri/shares/public
    browseable = yes
    writeable = yes
    guest ok = yes
@@ -121,19 +113,33 @@ EOF
 
 ##### Backup Task Setup
 # Add backup task to /usr/local/sbin since it should only be executed by superusers
-cat <<EOF > /usr/local/sbin/backup_pifi
+cat <<EOF > /usr/local/sbin/pifi-backup
 rsync -rv --stats /media/pri/shares/ /media/aux/shares |
 mail -s "Backup Report" -a "From: $pifi_server_name Backup Operation" $notification_receiver
 EOF
 
 # make it executable by root
-chmod u+x /usr/local/sbin/backup_pifi
+chmod u+x /usr/local/sbin/pifi-backup
 
 # Automate it via cron to run daily
 # (this should create a root cron job, so we shouldn't require sudo in the command)
 crontab <<EOF
-00 $backup_start_hour * * *   backup_pifi 2>> /var/log/backup_pifi.err
+00 $backup_start_hour * * *   pifi-backup 2>> /var/log/pifi-backup.err
 EOF
+
+
+##### pifi_adduser command
+# Add adduser command to /usr/local/sbin since it should only be executed by superusers
+cat <<'EOF' > /usr/local/sbin/pifi-adduser
+adduser $1
+mkdir /media/pri/shares/$1
+mv /home/$1/.* /media/pri/shares/$1/
+echo "/media/pri/shares/$1  /home/$1  bind  uid=$1,gid=$1,umask=007,bind  0  0" >> /etc/fstab
+mount -a
+EOF
+
+# make it executable by root
+chmod u+x /usr/local/sbin/pifi-adduser
 
 
 
