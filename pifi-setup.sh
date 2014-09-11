@@ -12,11 +12,10 @@ backup_start_hour=2
 
 
 ##### Inputs we require #####
-read -p 'Enter Workgroup name: ' workgroup
-read -p 'Enter notification sender gmail: ' notification_sender
-read -s -p 'Enter notification sender gmail password: ' notification_password
-echo
-read -p 'Enter notification receiver email: ' notification_receiver
+read -p  'Enter Workgroup name: ' workgroup
+read -p  'Enter notification sender gmail: ' notification_sender
+read -sp 'Enter notification sender gmail password: ' notification_password; echo
+read -p  'Enter notification receiver email: ' notification_receiver
 
 
 #### Housekeeping
@@ -134,16 +133,8 @@ EOF
 
 ##### pifi_adduser command
 # Add adduser command to /usr/local/sbin since it should only be executed by superusers
-cat <<'EOF' > /usr/local/sbin/pifi-adduser
-[ -z "$1" ] && echo "Command requires username" && exit 1
-adduser $1
-mkdir /media/pri/shares/$1
-mv /home/$1/* /media/pri/shares/$1/
-mv /home/$1/.??* /media/pri/shares/$1/
-echo "/media/pri/shares/$1  /home/$1  bind  uid=$1,gid=$1,umask=007,bind  0  0" >> /etc/fstab
-mount -a
-service samba restart
-EOF
+wget https://raw.githubusercontent.com/NetsydeMiro/pifi/master/pifi-adduser \
+  -O /user/local/sbin/pifi-adduser
 
 # make it executable by root
 chmod u+x /usr/local/sbin/pifi-adduser
@@ -151,3 +142,4 @@ chmod u+x /usr/local/sbin/pifi-adduser
 ### NOTE: users have to login via ssh first before being added to samba for some reason... look into automating this.  Maybe as simple as sudo su new-user
 ### NOTE: User file created in /home/username don't seem to be copying over to /media/pri/shares/username for some reason.  Fixed
 ### NOTE: pi directory from /home appears to be disappearing.  PROBABLY because of using pifi-adduser with no input.  Fixed
+### NOTE: make ssmtp config more secure by not including gmail password in text config file
