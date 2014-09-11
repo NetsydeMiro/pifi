@@ -45,7 +45,7 @@ apt-get -y install samba samba-common-bin libpam-smbpass winbind
 
 # backup configs
 cp /etc/nsswitch.conf /etc/nsswitch.conf.bak
-cp /etc/samba/smb.conf /etc/samba/smb.conf
+cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
 
 # so that we can see the server on windows machines on the network
 sed -i 's/files dns/files wins dns/' /etc/nsswitch.conf
@@ -53,8 +53,11 @@ sed -i 's/files dns/files wins dns/' /etc/nsswitch.conf
 # set workgroup name
 sed -i "s/WORKGROUP/${workgroup}/" /etc/samba/smb.conf
 
+# set security = user, which is usually a good idea
+sed -i "s/;\s*security = user/   security = user/" /etc/samba/smb.conf
+
 # make home directories writeable (first instance of read only is in homes section)
-sed -i "s/read only = yes/read only = no/" /etc/samba/smb.conf
+sed -i "0,/read only = yes/{s/read only = yes/read only = no/}" /etc/samba/smb.conf
 
 # add public share
 cat <<EOF >> /etc/samba/smb.conf
@@ -82,7 +85,7 @@ cp /etc/minidlna.conf /etc/minidlna.conf.bak
 
 
 # ensure we have public media folders ready
-mkdir -p -m a=rwx /media/public/video /media/public/audio /media/public/pictures
+mkdir -p -m a=rwx /media/pri/shares/public/video /media/pri/shares/public/audio /media/pri/shares/public/pictures
 
 sed -i 's/media_dir=\/var\/lib\/minidlna/# defined at end/' /etc/minidlna.conf
 cat <<EOF >> /etc/minidlna.conf
@@ -94,6 +97,7 @@ EOF
 
 
 ##### Notification Email Setup
+sudo apt-get -y install ssmtp mailutils
 # keep copy of original for kicks
 cp /etc/ssmtp/ssmtp.conf /etc/ssmtp/ssmtp.conf.bak
 
@@ -131,18 +135,19 @@ EOF
 ##### pifi_adduser command
 # Add adduser command to /usr/local/sbin since it should only be executed by superusers
 cat <<'EOF' > /usr/local/sbin/pifi-adduser
+[ -z "$1" ] && echo "Command requires username" && exit 1
 adduser $1
 mkdir /media/pri/shares/$1
-mv /home/$1/.* /media/pri/shares/$1/
+mv /home/$1/* /media/pri/shares/$1/
+mv /home/$1/.??* /media/pri/shares/$1/
 echo "/media/pri/shares/$1  /home/$1  bind  uid=$1,gid=$1,umask=007,bind  0  0" >> /etc/fstab
 mount -a
+service samba restart
 EOF
 
 # make it executable by root
 chmod u+x /usr/local/sbin/pifi-adduser
 
-
-
-### need to check that cron job is for root
-### Need to add user setup command to include creating private shares on hdds, mounting them and setting them as home directories
-### I'm thinking we add an adduser_pifi to /usr/local/sbin as we did with backup_pifi
+### NOTE: users have to login via ssh first before being added to samba for some reason... look into automating this.  Maybe as simple as sudo su new-user
+### NOTE: User file created in /home/username don't seem to be copying over to /media/pri/shares/username for some reason.  Fixed
+### NOTE: pi directory from /home appears to be disappearing.  PROBABLY because of using pifi-adduser with no input.  Fixed
