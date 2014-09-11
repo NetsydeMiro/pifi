@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# exit if username not provided as argument
+[ -z "$1" ] && echo "Command requires username" && exit 1
+
+read -sp 'Enter new user's password: ' newpass; echo
+
+# add user using adduser command to create home directory and files from skeleton
+# but surpress further info prompts
+echo "${newpass}
+${newpass}" | adduser --gecos '' $1
+
+# make users home directory on external primary, move skeleton files there
+mkdir /media/pri/shares/$1
+mv /home/$1/* /media/pri/shares/$1/
+mv /home/$1/.??* /media/pri/shares/$1/
+
+# make home directory on external primary mount to home directory on boot
+echo "/media/pri/shares/$1  /home/$1  bind  uid=$1,gid=$1,umask=007,bind  0  0" >> /etc/fstab
+mount -a
+
+# Login as new user from a non-root user account so that libpam-smbpass automagically adds them to the samba db
+# NOTE: find a way to pass in password programmatically if possible
+# although technically this may be better, since it forces confirmation (unfortunately twice)
+echo "Login with new user to activate samba share"
+su -c "su -c echo $1" pi
+
+service samba restart
+
