@@ -20,6 +20,8 @@ read -p  'Enter notification receiver email: ' notification_receiver
 
 #### Housekeeping
 apt-get -y update
+# htop is slicker than top
+apt-get -y install htop
 # Vim is the bomb
 update-alternatives --set editor /usr/bin/vim.tiny
 
@@ -39,6 +41,10 @@ echo '/dev/sda1  /media/pri  ntfs-3g  default  0  0' >> /etc/fstab
 echo '/dev/sdb1  /media/aux  ntfs-3g  default  0  0' >> /etc/fstab
 mount -a
 
+# ensure shares directories are available
+mkdir -p -m a=rwx /media/pri/shares /meida/aux/shares
+
+
 ##### Samba Setup
 apt-get -y install samba samba-common-bin libpam-smbpass winbind
 
@@ -53,10 +59,13 @@ sed -i 's/files dns/files wins dns/' /etc/nsswitch.conf
 sed -i "s/WORKGROUP/${workgroup}/" /etc/samba/smb.conf
 
 # set security = user, which is usually a good idea
-sed -i "s/;\s*security = user/   security = user/" /etc/samba/smb.conf
+sed -i "s/#\s*security = user/   security = user/" /etc/samba/smb.conf
 
 # make home directories writeable (first instance of read only is in homes section)
 sed -i "0,/read only = yes/{s/read only = yes/read only = no/}" /etc/samba/smb.conf
+
+# ensure public media directory is available
+mkdir -p -m a=rwx /media/pri/shares/public
 
 # add public share
 cat <<EOF >> /etc/samba/smb.conf
@@ -83,7 +92,7 @@ cp /etc/minidlna.conf /etc/minidlna.conf.bak
 #sed -i 's/#friendlyname=/friendlyname=${pifi_server_name}/ ' /etc/minidlna.conf
 
 
-# ensure we have public media folders ready
+# ensure public media directories are available
 mkdir -p -m a=rwx /media/pri/shares/public/video /media/pri/shares/public/audio /media/pri/shares/public/pictures
 
 sed -i 's/media_dir=\/var\/lib\/minidlna/# defined at end/' /etc/minidlna.conf
@@ -93,6 +102,8 @@ media_dir=V,/media/pri/shares/public/video
 media_dir=A,/media/pri/shares/public/audio
 media_dir=P,/media/pri/shares/public/pictures
 EOF
+
+service minidlna force-reload
 
 
 ##### Notification Email Setup
@@ -127,19 +138,15 @@ chmod u+x /usr/local/sbin/pifi-backup
 # Automate it via cron to run daily
 # (this should create a root cron job, so we shouldn't require sudo in the command)
 crontab <<EOF
-00 $backup_start_hour * * *   pifi-backup 2>> /var/log/pifi-backup.err
+00 $backup_start_hour * * *   /usr/local/sbin/pifi-backup 2>> /var/log/pifi-backup.err
 EOF
 
 
 ##### pifi_adduser command
 # Add adduser command to /usr/local/sbin since it should only be executed by superusers
 wget https://raw.githubusercontent.com/NetsydeMiro/pifi/master/pifi-adduser \
-  -O /user/local/sbin/pifi-adduser
+  -O /usr/local/sbin/pifi-adduser
 
 # make it executable by root
 chmod u+x /usr/local/sbin/pifi-adduser
 
-### NOTE: users have to login via ssh first before being added to samba for some reason... look into automating this.  Maybe as simple as sudo su new-user
-### NOTE: User file created in /home/username don't seem to be copying over to /media/pri/shares/username for some reason.  Fixed
-### NOTE: pi directory from /home appears to be disappearing.  PROBABLY because of using pifi-adduser with no input.  Fixed
-### NOTE: make ssmtp config more secure by not including gmail password in text config file
