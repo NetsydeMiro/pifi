@@ -128,7 +128,7 @@ EOF
 ##### Backup Task Setup
 # Add backup task to /usr/local/sbin since it should only be executed by superusers
 cat <<EOF > /usr/local/sbin/pifi-backup
-rsync -rv --stats /media/pri/shares/ /media/aux/shares |
+rsync -rvt --stats /media/pri/shares/ /media/aux/shares |
 mail -s "Backup Report" -a "From: $pifi_server_name Backup Operation" $notification_receiver
 EOF
 
