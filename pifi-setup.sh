@@ -1,5 +1,5 @@
 #!/bin/bash
-# Note that this script require root access, it should be run via sudo
+# This script require root access, it should be run via sudo
 
 
 ##### Sane Defaults #####

@@ -1,4 +1,5 @@
 #!/bin/bash
+# This script require root access, it should be run via sudo
 
 # exit if username not provided as argument
 [ -z "$1" ] && echo "Command requires username" && exit 1
