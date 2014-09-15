@@ -106,10 +106,16 @@ sed -i "s/hostname=.*/hostname=${pifi_server_name}/" /etc/ssmtp/ssmtp.conf
 
 # add more mail settings
 cat <<EOF >> /etc/ssmtp/ssmtp.conf
-
 AuthUser=$notification_sender
 AuthPass=$notification_password
 UseSTARTTLS=YES
+EOF
+
+# add reverse aliases for users likely to receive any fault notifications
+cat <<EOF >> /etc/ssmtp/revaliases
+root:$notification_receiver
+postmaster:$notification_receiver
+pi:$notification_receiver
 EOF
 
 
