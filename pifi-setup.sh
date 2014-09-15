@@ -18,9 +18,9 @@ read -sp 'Enter notification sender gmail password: ' notification_password; ech
 read -p  'Enter notification receiver email: ' notification_receiver
 
 
-#### Housekeeping
+##### Housekeeping
 apt-get -y update
-# htop is slicker than top
+# htop is slicker than top for checking server load
 apt-get -y install htop
 # Vim is the bomb
 update-alternatives --set editor /usr/bin/vim.tiny
@@ -46,20 +46,11 @@ mkdir -p -m a=rwx /media/pri/shares /meida/aux/shares
 
 
 ##### Samba Setup
-apt-get -y install samba samba-common-bin libpam-smbpass winbind
-
-# backup configs
-cp /etc/nsswitch.conf /etc/nsswitch.conf.bak
+apt-get -y install samba samba-common-bin libpam-smbpass
 cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
-
-# so that we can see the server on windows machines on the network
-sed -i 's/files dns/files wins dns/' /etc/nsswitch.conf
 
 # set workgroup name
 sed -i "s/WORKGROUP/${workgroup}/" /etc/samba/smb.conf
-
-# set security = user, which is usually a good idea
-sed -i "s/#\s*security = user/   security = user/" /etc/samba/smb.conf
 
 # make home directories writeable (first instance of read only is in homes section)
 sed -i "0,/read only = yes/{s/read only = yes/read only = no/}" /etc/samba/smb.conf
@@ -84,17 +75,15 @@ service samba restart
 
 ##### MiniDLNA Setup
 apt-get -y install minidlna
-
-# backup config
 cp /etc/minidlna.conf /etc/minidlna.conf.bak
 
-# may not need this, appears to use hostname by default
-#sed -i 's/#friendlyname=/friendlyname=${pifi_server_name}/ ' /etc/minidlna.conf
-
+# set minidlna server name
+sed -i "s/#friendlyname=/friendlyname=${pifi_server_name}/" /etc/minidlna.conf
 
 # ensure public media directories are available
 mkdir -p -m a=rwx /media/pri/shares/public/video /media/pri/shares/public/audio /media/pri/shares/public/pictures
 
+# set media directories
 sed -i 's/media_dir=\/var\/lib\/minidlna/# defined at end/' /etc/minidlna.conf
 cat <<EOF >> /etc/minidlna.conf
 
@@ -108,7 +97,6 @@ service minidlna force-reload
 
 ##### Notification Email Setup
 sudo apt-get -y install ssmtp mailutils
-# keep copy of original for kicks
 cp /etc/ssmtp/ssmtp.conf /etc/ssmtp/ssmtp.conf.bak
 
 # replace mail settings
@@ -142,7 +130,7 @@ crontab <<EOF
 EOF
 
 
-##### pifi_adduser command
+##### pifi-adduser command
 # Add adduser command to /usr/local/sbin since it should only be executed by superusers
 wget https://raw.githubusercontent.com/NetsydeMiro/pifi/master/pifi-adduser \
   -O /usr/local/sbin/pifi-adduser
