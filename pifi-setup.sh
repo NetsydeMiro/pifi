@@ -98,7 +98,7 @@ service minidlna force-reload
 
 
 ##### Notification Email Setup
-sudo apt-get -y install msmtp
+apt-get -y install msmtp
 
 # add mail settings
 cat <<EOF > /etc/msmtprc
@@ -114,6 +114,11 @@ from $notification_sender
 aliases /etc/aliases
 EOF
 
+# protect file that stores password
+chmod 600 /etc/msmtprc
+
+# setup mail alias file so that notifications to local users
+# go to desired recipient address
 cat <<EOF > /etc/aliases
 default: $notification_receiver
 EOF
