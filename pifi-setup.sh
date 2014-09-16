@@ -44,7 +44,7 @@ echo '/dev/sdb1  /media/aux  ntfs-3g  default  0  0' >> /etc/fstab
 mount -a
 
 # ensure shares directories are available
-mkdir -p -m a=rwx /media/pri/shares /meida/aux/shares
+mkdir -p -m a=rwx /media/pri/shares /media/aux/shares
 
 
 ##### Samba Setup
