@@ -98,7 +98,9 @@ service minidlna force-reload
 
 
 ##### Notification Email Setup
-apt-get -y install msmtp
+# we use msmtp because it's flexible and lightweight
+# msmtp-mta renders it usable for system notifications 
+apt-get -y install msmtp msmtp-mta
 
 # add mail settings
 cat <<EOF > /etc/msmtprc
@@ -129,14 +131,7 @@ EOF
 cat <<EOF > /usr/local/sbin/pifi-backup
 #!/bin/bash
 
-{
-	cat <<-HEADER
-	From: $pifi_server_name Backup Operation
-	To: $notification_receiver
-	Subject: Backup Report
-	HEADER
-	rsync -rvt --stats /media/pri/shares/ /media/aux/shares ;
-} | msmtp $notification_receiver
+rsync -rvt --stats /media/pri/shares/ /media/aux/shares
 EOF
 
 
@@ -146,7 +141,7 @@ chmod u+x /usr/local/sbin/pifi-backup
 # Automate it via cron to run daily
 # (this should create a root cron job, so we shouldn't require sudo in the command)
 crontab <<EOF
-00 $backup_start_hour * * *   /usr/local/sbin/pifi-backup 2>> /var/log/pifi-backup.err
+00 $backup_start_hour * * *   /usr/local/sbin/pifi-backup
 EOF
 
 
