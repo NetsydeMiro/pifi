@@ -6,7 +6,9 @@
 # read -p 'Enter desired server name: ' pifi_server_name
 pifi_server_name='pifi'
 # read -p 'Enter notification email server: ' notification_server
-notification_server='smtp.gmail.com:587'
+notification_server='smtp.gmail.com'
+# read -p 'Enter notification email server port: ' notification_port
+notification_port=587
 # read -p 'Enter backup job start hour (0 is midnight, 23 is 11pm): ' backup_start_hour
 backup_start_hour=2
 
@@ -96,35 +98,42 @@ service minidlna force-reload
 
 
 ##### Notification Email Setup
-sudo apt-get -y install ssmtp mailutils
-cp /etc/ssmtp/ssmtp.conf /etc/ssmtp/ssmtp.conf.bak
+sudo apt-get -y install msmtp
 
-# replace mail settings
-sed -i "s/=mail/=${notification_server}/" /etc/ssmtp/ssmtp.conf
-sed -i 's/#FromLineOverride/FromLineOverride/' /etc/ssmtp/ssmtp.conf
-sed -i "s/hostname=.*/hostname=${pifi_server_name}/" /etc/ssmtp/ssmtp.conf
-
-# add more mail settings
-cat <<EOF >> /etc/ssmtp/ssmtp.conf
-AuthUser=$notification_sender
-AuthPass=$notification_password
-UseSTARTTLS=YES
+# add mail settings
+cat <<EOF > /etc/msmtprc
+account default
+host $notification_server
+port $notification_port
+auth on
+user $notification_sender
+password $notification_password
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+from $notification_sender
+aliases /etc/aliases
 EOF
 
-# add reverse aliases for users likely to receive any fault notifications
-cat <<EOF >> /etc/ssmtp/revaliases
-root:$notification_receiver
-postmaster:$notification_receiver
-pi:$notification_receiver
+cat <<EOF > /etc/aliases
+default: $notification_receiver
 EOF
 
 
 ##### Backup Task Setup
 # Add backup task to /usr/local/sbin since it should only be executed by superusers
 cat <<EOF > /usr/local/sbin/pifi-backup
-rsync -rvt --stats /media/pri/shares/ /media/aux/shares |
-mail -s "Backup Report" -a "From: $pifi_server_name Backup Operation" $notification_receiver
+#!/bin/bash
+
+{
+	cat <<HEADER
+	From: $pifi_server_name Backup Operation
+	To: $notification_receiver
+	Subject: Backup Report
+	HEADER
+	rsync -rvt --stats /media/pri/shares/ /media/aux/shares ;
+} | msmtp $notification_receiver
 EOF
+
 
 # make it executable by root
 chmod u+x /usr/local/sbin/pifi-backup
