@@ -9,7 +9,7 @@
 echo 'miro = miro@netsyde.com' > /etc/samba/smbusers.map
 
 # add username mapping reference to samba config
-sed -i 's/\(^\s*security = user\s*\)/\1\n   username map = \/etc\/samba\/smbusers.map/' \
+sed -i 's/\(^#\s*security = user\s*\)/\1\n   username map = \/etc\/samba\/smbusers.map/' \
   /etc/samba/smb.conf
 
 service samba restart
