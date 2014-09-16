@@ -11,10 +11,11 @@ read -sp "Enter new user's password: " newpass; echo
 echo "${newpass}
 ${newpass}" | adduser --gecos '' $1
 
-# make users home directory on external primary, move skeleton files (including dofiles) there
+# make users home directory on external primary  
+# relocate skeleton files (including dofiles) there, unless they already exist
 mkdir /media/pri/shares/$1
-mv /home/$1/* /media/pri/shares/$1/
-mv /home/$1/.??* /media/pri/shares/$1/
+mv -n /home/$1/* /media/pri/shares/$1/
+mv -n /home/$1/.??* /media/pri/shares/$1/
 
 # make home directory on external primary mount to home directory on boot
 echo "/media/pri/shares/$1  /home/$1  bind  uid=$1,gid=$1,umask=007,bind  0  0" >> /etc/fstab
