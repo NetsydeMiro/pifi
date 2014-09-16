@@ -125,7 +125,7 @@ cat <<EOF > /usr/local/sbin/pifi-backup
 #!/bin/bash
 
 {
-	cat <<HEADER
+	cat <<-HEADER
 	From: $pifi_server_name Backup Operation
 	To: $notification_receiver
 	Subject: Backup Report
