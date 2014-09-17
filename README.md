@@ -14,10 +14,10 @@ Why build your own Pi-based NAS?  Because it’s awesome!
 
 ### Requirements
 
-- ** Raspberry Pi revision B, running Raspian Wheezy** (June or September 2014 release).
+- **Raspberry Pi revision B, running Raspian Wheezy** (June or September 2014 release).
 <br/>Other combinations of Raspbian and Pi will probably work, but these are the ones with which the script was built and tested.
 
-- ** Two NTFS formatted USB hard drives.**
+- **Two NTFS formatted USB hard drives.**
 <br/>Other HDD Filesystems will work as well, but would require altering the portion of the script that installs ntfs-3g and creates mounting entries in fstab. Also lost would be the convenience of interoperation with windows systems when a drive is taken on the road, which was a deemed a priority. 
 
 
