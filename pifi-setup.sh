@@ -131,7 +131,8 @@ EOF
 cat <<EOF > /usr/local/sbin/pifi-backup
 #!/bin/bash
 
-rsync -rvt --stats /media/pri/shares/ /media/aux/shares
+# recursive, verbose, human readable, preserve times, give transfer stats
+rsync -rvht --stats /media/pri/shares/ /media/aux/shares
 EOF
 
 
