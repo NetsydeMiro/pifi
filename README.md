@@ -105,7 +105,7 @@ Here is the resultant directory setup for a PiFi NAS that’s had two users subs
 
 It’s a bit slow.
 
-- File transfer speeds appear to max out at under 2 MB/s, even for internal copies between attached HDDs.  The bottleneck is likely the Pi’s USB transfer speed or it’s execution of the ntfs-3g driver.  
+- File transfer speeds appear to max out at under 2 MB/s, even for internal copies between attached HDDs.  The bottleneck is likely the Pi’s USB transfer speed or its execution of the ntfs-3g driver.  
 - This might be addressed by using disks formatted with an ext filesystem (or another linux-performant variant), or by using a server that has a bit more muscle than a Pi.  Most if not all of the setup script would likely work on any Debian variant. 
 
 I've found the server performs very well for all file and media serving functions I've put it through.  Only when writing large files to it will you notice slowdowns, but for seeding the drives with large amounts of data you'd probably want to connect them directly via USB to a computer anyway.  
