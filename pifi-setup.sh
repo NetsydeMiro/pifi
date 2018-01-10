@@ -72,7 +72,7 @@ cat <<EOF >> /etc/samba/smb.conf
    read only = no
 EOF
 
-service samba restart
+service smbd restart
 
 
 ##### MiniDLNA Setup
@@ -125,8 +125,8 @@ cat <<EOF > /etc/aliases
 default: $notification_receiver
 EOF
 
-
 ##### Backup Task Setup
+apt-get -y install rsync
 # Add backup task to /usr/local/sbin since it should only be executed by superusers
 cat <<EOF > /usr/local/sbin/pifi-backup
 #!/bin/bash

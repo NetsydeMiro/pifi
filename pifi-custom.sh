@@ -1,8 +1,12 @@
 #!/bin/bash
 # This script require root access, it should be run via sudo
 
-# I need to add a samba -> linux user mapping because my windows box user is an email
-# due win8's weird initial setup procedure, and 'nix recommends against symbols in usernames.  
+# UPDATE: It appears that this script is no longer necessary with Raspbian Jessie and/or Win10.  
+# Leaving for reference in case needed in some form again in the future. 
+
+# With Raspbian Wheezy PiFi needed a samba -> linux user mapping 
+# because my windows box user is an email due win8's weird initial setup procedure, 
+# and 'nix recommends against symbols in usernames.  
 # Other Windows 8 users may be in a similar bind... modify this as required.
 
 # create username mapping file

@@ -3,22 +3,26 @@ PiFi
 Your Own Raspberry Pi File Server
 ------------------------------------
 
-PiFi is a bash script that quickly converts your Raspberry Pi into a DLNA-enabled NAS server with public and private drive space that is automatically backed up nightly for redundancy.  
+PiFi is a bash script that quickly converts your Raspberry Pi into a DLNA-enabled NAS server with public and private drive space that is automatically backed up nightly for redundancy.  Optionally, it can also be outfitted as a [Plex Media Server](https://www.plex.tv/).
 
 Also installed are: 
 - pifi-backup: a command to allow manually backing up your PiFi at any time.
 - pifi-adduser: a convenient counterpart to linux’s adduser command, which can be used to quickly allot and enable private drive space for new users. 
 - msmtp: so that automated email notifications can be sent out that summarize nightly backups, as well as report system faults.
 
+Optionally you can also install Plex via the *plex-setup.sh* script, if you want to make PiFi into a Plex server as well. 
+
 Why build your own Pi-based NAS?  Because it’s awesome!  
 
 ### Requirements
 
-- **Raspberry Pi revision B, running Raspian Wheezy** (June or September 2014 release).
-<br/>Other combinations of Raspbian and Pi will probably work, but these are the ones with which the script was built and tested.
+- **A Raspberry Pi, running Raspian Jessie**.
+<br/>
+Here are the final Jessie releases of [Raspbian](http://downloads.raspberrypi.org/raspbian/images/raspbian-2017-07-05/) and [Raspbian Lite](https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2017-07-05/). 
+Other combinations of Raspbian and Pi might work (or even other hardware running another Debian variant), but samba private shares will need custom configuration after Jessie, since Raspbian Stretch drops support for libpam-smbpass, and the Plex install was not tested with versions earlier than Jessie.  
 
 - **Two NTFS formatted USB hard drives.**
-<br/>Other HDD Filesystems will work as well, but would require altering the portion of the script that installs ntfs-3g and creates mounting entries in fstab. Also lost would be the convenience of interoperation with windows systems when a drive is taken on the road, which was a deemed a priority. 
+<br/>Other HDD Filesystems will work as well, but would require altering the portion of the script that installs ntfs-3g and creates mounting entries in fstab. Also lost would be the convenience of interoperation with windows systems when a drive is taken on the road, which was deemed a priority. 
 
 
 ### Installation
@@ -37,6 +41,9 @@ Why build your own Pi-based NAS?  Because it’s awesome!
      - The email to which notifications are sent (can differ from the sender). 
 4. Allow the script to finish executing (this will take a few minutes).  
    - Congrats, you’ve got yourself a PiFi! 
+5. (Optional)  Download and execute the Plex Server script. 
+   - wget https://raw.githubusercontent.com/NetsydeMiro/pifi/master/plex-setup.sh
+   - sudo bash plex-setup.sh
 
 
 ### Defaults and Customization
