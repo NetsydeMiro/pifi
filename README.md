@@ -10,19 +10,16 @@ Also installed are:
 - pifi-adduser: a convenient counterpart to linux’s adduser command, which can be used to quickly allot and enable private drive space for new users. 
 - msmtp: so that automated email notifications can be sent out that summarize nightly backups, as well as report system faults.
 
-Optionally you can also install Plex via the *plex-setup.sh* script, if you want to make PiFi into a Plex server as well. 
-
 Why build your own Pi-based NAS?  Because it’s awesome!  
 
 ### Requirements
 
-- **A Raspberry Pi, running Raspian Jessie**.
-<br/>
+- **A Raspberry Pi, running Raspian Jessie**  
 Here are the final Jessie releases of [Raspbian](http://downloads.raspberrypi.org/raspbian/images/raspbian-2017-07-05/) and [Raspbian Lite](https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2017-07-05/). 
 Other combinations of Raspbian and Pi might work (or even other hardware running another Debian variant), but samba private shares will need custom configuration after Jessie, since Raspbian Stretch drops support for libpam-smbpass, and the Plex install was not tested with versions earlier than Jessie.  
 
-- **Two NTFS formatted USB hard drives.**
-<br/>Other HDD Filesystems will work as well, but would require altering the portion of the script that installs ntfs-3g and creates mounting entries in fstab. Also lost would be the convenience of interoperation with windows systems when a drive is taken on the road, which was deemed a priority. 
+- **Two NTFS formatted USB hard drives**  
+Other HDD Filesystems will work as well, but would require altering the portion of the script that installs ntfs-3g and creates mounting entries in fstab. Also lost would be the convenience of interoperation with windows systems when a drive is taken on the road, which was deemed a priority. 
 
 
 ### Installation
