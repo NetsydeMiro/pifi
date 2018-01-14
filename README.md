@@ -107,10 +107,10 @@ Here is the resultant directory setup for a PiFi NAS that’s had two users subs
 
 ### One Drawback
 
-It’s a bit slow.
+It (can be) a bit slow.
 
-- File transfer speeds appear to max out at under 2 MB/s, even for internal copies between attached HDDs.  The bottleneck is likely the Pi’s USB transfer speed or its execution of the ntfs-3g driver.  
-- This might be addressed by using disks formatted with an ext filesystem (or another linux-performant variant), or by using a server that has a bit more muscle than a Pi.  Most if not all of the setup script would likely work on any Debian variant. 
+- File transfer speeds for PiFis built on Pis version 2 and below appear to max out at under 2 MB/s, even for internal copies between attached HDDs.  The bottleneck was likely the Pi’s data bus transfer speed or its execution of the ntfs-3g driver.  Pi 3's appear to have increased network throughput to approximately 11 MB/s. 
+- Data throughput might be addressed by using disks formatted with an ext filesystem (or another linux-performant variant), or by using a server that has a bit more muscle than a Pi.  Most if not all of the setup script would likely work on any Debian variant. 
 
 I've found the server performs very well for all file and media serving functions I've put it through.  Only when writing large files to it will you notice slowdowns, but for seeding the drives with large amounts of data you'd probably want to connect them directly via USB to a computer anyway.  
 
@@ -118,7 +118,7 @@ I've found the server performs very well for all file and media serving function
 
 The private file shares are not fully secure
 
-- Because of NTFS file system limitations when mounted in a Linux system, all private user shares are actually accessible to anyone who knows how to ssh into the system and navigate a linux system.  
+- Because of NTFS file system limitations when mounted in a Linux system, all private user shares are actually accessible to anyone who knows how to ssh into and navigate a linux system. 
 - This might be addressed by using disks formatted with an ext filesystem (or another linux permission compatible variant), but we would lose the convenience of being able to easily interoperate with windows systems when taking a drive on the road. 
 
 The notification sender password is stored in clear text.
