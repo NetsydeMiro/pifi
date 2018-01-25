@@ -1,6 +1,9 @@
 #!/bin/bash
 # This script require root access, it should be run via sudo
 
+# Note: iwconfig off works, but on does not.
+# TODO: look into this and resolve.
+
 # exit if on/off command not provided as argument
 [[ $1 != 'on' && $1 != 'off' ]] && echo "Command requires on/off specification. E.g. sudo pifi-wifi on" && exit 1
 

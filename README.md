@@ -8,8 +8,6 @@ PiFi is a bash script that quickly converts your Raspberry Pi into a DLNA-enable
 Also installed are: 
 - pifi-backup: a command to allow manually backing up your PiFi at any time.
 - pifi-adduser: a convenient counterpart to linux’s adduser command, which can be used to quickly allot and enable private drive space for new users. 
-- pifi-wifi: allows enabling/disabling wifi that persists across reboots.
-- pifi-ip: enables setting a static ip.
 - msmtp: so that automated email notifications can be sent out that summarize nightly backups, as well as report system faults.
 
 Why build your own Pi-based NAS?  Because it’s awesome!  
