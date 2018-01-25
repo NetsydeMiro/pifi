@@ -146,11 +146,16 @@ crontab <<EOF
 EOF
 
 
-##### pifi-adduser command
-# Add adduser command to /usr/local/sbin since it should only be executed by superusers
+##### add pifi config commands
+# Add commands to /usr/local/sbin since they should only be executed by superusers
 wget https://raw.githubusercontent.com/NetsydeMiro/pifi/master/pifi-adduser \
   -O /usr/local/sbin/pifi-adduser
+wget https://raw.githubusercontent.com/NetsydeMiro/pifi/master/pifi-wifi \
+  -O /usr/local/sbin/pifi-wifi
+wget https://raw.githubusercontent.com/NetsydeMiro/pifi/master/pifi-ip \
+  -O /usr/local/sbin/pifi-ip
 
-# make it executable by root
+# make them executable by root
 chmod u+x /usr/local/sbin/pifi-adduser
-
+chmod u+x /usr/local/sbin/pifi-wifi
+chmod u+x /usr/local/sbin/pifi-ip
