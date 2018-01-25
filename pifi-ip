@@ -5,7 +5,9 @@
 ! [[ $1 =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]] && echo "Command requires a valid ip address be specified. E.g. sudo pifi-ip 192.168.1.77" && exit 1
 
 # delete existing ip specification, if any
-sed -i "s/ip=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\z//" /boot/cmdline.txt
+sed -i "s/^ip=[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}$//" /boot/cmdline.txt
 
 # add new ip specifications
 echo "ip=$1" >> /boot/cmdline.txt
+
+echo "You must reboot your pi for your new ip to take effect.  E.g. sudo reboot now"
